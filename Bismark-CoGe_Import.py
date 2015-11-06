@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 __author__ = 'groverj3'
 
 import csv
