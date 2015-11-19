@@ -37,7 +37,7 @@ file_validity(parser, methyl_path)
 # Save paths for later use
 
 coge_filtered_path = '%s.filtered.coge.csv' % methyl_path
-coge_unfilitered_path = '%s.coge.csv' % methyl_path
+coge_unfiltered_path = '%s.coge.csv' % methyl_path
 
 # Let the user know it's working
 
@@ -45,7 +45,7 @@ print('Formatting PileOMeth bedGraph files for CoGe-import from:\n', methyl_path
 if min_coverage:
     print('Saving CoGe-formatted and coverage-filtered file to:\n', coge_filtered_path)
 if unfiltered == 't':
-    print('Saving CoGe-formatted unfiltered file to:\n', coge_unfilitered_path)
+    print('Saving CoGe-formatted unfiltered file to:\n', coge_unfiltered_path)
 
 # Open the PileOMeth output file and create an output for CoGe upload
 
@@ -56,7 +56,7 @@ if min_coverage:
     coge_filtered_csv = open(coge_filtered_path, 'w')
     coge_formatted_filtered = csv.writer(coge_filtered_csv)
 if unfiltered == 't':
-    coge_unfiltered_csv = open(coge_unfilitered_path, 'w')
+    coge_unfiltered_csv = open(coge_unfiltered_path, 'w')
     coge_formatted_unfiltered = csv.writer(coge_unfiltered_csv)
 
 next(pileometh_summary)  # Skip header
