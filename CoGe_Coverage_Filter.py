@@ -24,6 +24,7 @@ parser.add_argument('input_file', help='Input Bismark context-specific methylati
 parser.add_argument('-c', '--coverage', type=int, required=True, help='Minimum coverage to report in output csv')
 coge_path = parser.parse_args().input_file
 coverage = parser.parse_args().coverage
+
 file_validity(parser, coge_path)  # Check validity of input filename
 
 # Output file is input_file_path.coge.csv
