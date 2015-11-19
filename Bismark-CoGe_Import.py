@@ -16,6 +16,12 @@ def file_validity(parser, arg):
         return open(arg, 'r')
 
 
+# Function to return number from a string, to extract chromosome number from string
+
+def get_num(x):
+    return int(''.join(substring for substring in x if substring.isdigit()))
+
+
 # Parse command line file path, store in variable
 
 parser = ArgumentParser(description='CoGe-ifier for Bismark converts context-specific methylation call files '
@@ -91,7 +97,7 @@ for chrm in bismark_dict:
 
 for chrm in bismark_dict:
     for pos in bismark_dict[chrm]:  # Nested loop
-        chrm_key = chrm  # Save chromosome number key, position key, and methylation fraction
+        chrm_key = get_num(chrm)  # Save chromosome number key, position key, and methylation fraction
         pos_key = pos
         dec_met = bismark_dict[chrm][pos]['dec_met']
         total = bismark_dict[chrm][pos]['total']
