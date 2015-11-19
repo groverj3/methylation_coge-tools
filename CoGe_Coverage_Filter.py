@@ -28,7 +28,7 @@ file_validity(parser, coge_path)  # Check validity of input filename
 
 # Output file is input_file_path.coge.csv
 
-filtered_coge_path = '%s.filtered_coge.csv' % coge_path
+filtered_coge_path = '%s.filtered.coge.csv' % coge_path
 
 print('Filtering out cytosines with read coverage <', coverage, 'from:\n', coge_path, '\nSaving filtered file to:\n',
       filtered_coge_path)
