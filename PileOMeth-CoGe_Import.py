@@ -18,8 +18,8 @@ def file_validity(parser, arg):
 
 # Function to return number from a string, to extract chromosome number from string
 
-def get_num(x):
-    return int(''.join(substring for substring in x if substring.isdigit()))
+def get_int(string):
+    return int(''.join(substring for substring in string if substring.isdigit()))
 
 
 # Parse command line file path, store in variable
@@ -70,7 +70,7 @@ next(pileometh_summary)  # Skip header
 # Write to output files depending on coverage filtered or not
 
 for row in pileometh_summary:
-    chrm = get_num(row[0])
+    chrm = get_int(row[0])
     pos = row[1]
     met_reads = int(row[4])
     unmet_reads = int(row[5])
