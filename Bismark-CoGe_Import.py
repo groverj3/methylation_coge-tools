@@ -91,6 +91,15 @@ bismark_dict = {}
 
 
 def parse_bismark(bismark_summary):
+    comprehensive = None
+    top = None
+    bottom = None
+    if bismark_summary == comprehensive_summary:
+        comprehensive = True
+    elif bismark_summary == top_summary:
+        top = True
+    elif bismark_summary == bottom_summary:
+        bottom = True
     next(bismark_summary)  # Skip header row
     for row in bismark_summary:
         chrm = row[2]  # Chromosome number saved to "chrm"
@@ -105,11 +114,11 @@ def parse_bismark(bismark_summary):
             bismark_dict[chrm][pos]['total'] += 1  # Add 1 to total and metc counts if methylated
         elif met == '-':
             bismark_dict[chrm][pos]['total'] += 1  # Add 1 to total count if unmethylated
-        if bismark_summary == comprehensive_summary:
+        if comprehensive:
             bismark_dict[chrm][pos]['strand'] = 1  # Store strand as 1 is from the comprehensive report or OT file
-        if bismark_summary == top_summary:
+        elif top:
             bismark_dict[chrm][pos]['strand'] = 1
-        if bismark_summary == bottom_summary:
+        elif bottom:
             bismark_dict[chrm][pos]['strand'] = -1  # Store strand as -1 if from the OB file
 
 
