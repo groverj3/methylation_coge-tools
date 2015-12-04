@@ -2,6 +2,8 @@
 
 import re
 
+__author__ = 'groverj3'
+
 # Module to strip nonsense from chromosome IDs
 
 
