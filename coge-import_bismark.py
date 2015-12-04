@@ -1,26 +1,43 @@
 #!/usr/bin/env python3
 
-__author__ = 'groverj3'
-
 import csv
 import os.path
 from argparse import ArgumentParser
+
 from fix_chromosome_id import fix_chromosome_id
 
 
-# Function to determine if you've passed a valid filename
+# Define functions
 
-def file_validity(parser, arg):
+
+def file_validity(parser, arg):  # Determine file validity
     if not os.path.exists(arg):
         parser.error('%s is not a valid file path.' % arg)
     else:
-        return open(arg, 'r')
+        pass
 
 
-# Function to return number from a string, to extract chromosome number from string
-
-def get_int(string):
-    return int(''.join(substring for substring in string if substring.isdigit()))
+def parse_bismark(bismark_summary, input_dict, strandedness):  # Parse bismark_summary file and add to input_dict
+    next(bismark_summary)  # Skip header row
+    for row in bismark_summary:
+        chrm = row[2]  # Chromosome number saved to "chrm"
+        pos = row[3]  # Position saved to "pos"
+        met = row[1]  # Methylation status saved to "met"
+        if chrm not in input_dict:  # Add chromosome number as key if not in dict
+            input_dict[chrm] = {}  # Make its value an empty dict
+        if pos not in input_dict[chrm]:  # Add position as key in second level if not already in dict
+            input_dict[chrm][pos] = {'metc': 0, 'total': 0}  # Make its value the running counts of methyl status
+        if met == '+':
+            input_dict[chrm][pos]['metc'] += 1
+            input_dict[chrm][pos]['total'] += 1  # Add 1 to total and metc counts if methylated
+        elif met == '-':
+            input_dict[chrm][pos]['total'] += 1  # Add 1 to total count if unmethylated
+        if strandedness == 'comprehensive':
+            input_dict[chrm][pos]['strand'] = 1  # Store strand as 1 is from the comprehensive report or OT file
+        elif strandedness == 'top':
+            input_dict[chrm][pos]['strand'] = 1
+        elif strandedness == 'bottom':
+            input_dict[chrm][pos]['strand'] = -1  # Store strand as -1 if from the OB file
 
 
 # Parse command line arguments, store in variables
@@ -44,7 +61,7 @@ output = parser.parse_args().output
 # Save paths for later-use
 
 coge_filtered_path = '%s.filtered.coge.csv' % output
-coge_unfilitered_path = '%s.coge.csv' % output
+coge_unfiltered_path = '%s.coge.csv' % output
 
 comprehensive_path = None
 top_path = None
@@ -56,7 +73,7 @@ if parser.parse_args().OT:
 if parser.parse_args().OB:
     bottom_path = parser.parse_args().OB
 
-# Check validity of input/output path
+# Determine whether files are valid
 
 if comprehensive_path:
     file_validity(parser, comprehensive_path)
@@ -86,44 +103,9 @@ if top_path:
 if bottom_path:
     input_list.append(bottom_path)
 
-# Initialize a dictionary that will serve at the primary data structure and define a function to parse the Bismark files
-
-bismark_dict = {}
-
-
-def parse_bismark(bismark_summary):
-    comprehensive = None
-    top = None
-    bottom = None
-    if bismark_summary == comprehensive_summary:
-        comprehensive = True
-    elif bismark_summary == top_summary:
-        top = True
-    elif bismark_summary == bottom_summary:
-        bottom = True
-    next(bismark_summary)  # Skip header row
-    for row in bismark_summary:
-        chrm = row[2]  # Chromosome number saved to "chrm"
-        pos = row[3]  # Position saved to "pos"
-        met = row[1]  # methylation status saved to "met"
-        if chrm not in bismark_dict:  # Add chromosome number as key if not in dict
-            bismark_dict[chrm] = {}  # Make its value an empty dict
-        if pos not in bismark_dict[chrm]:  # Add position as key in second level if not already in dict
-            bismark_dict[chrm][pos] = {'metc': 0, 'total': 0}  # Make its value the running counts of methyl status
-        if met == '+':
-            bismark_dict[chrm][pos]['metc'] += 1
-            bismark_dict[chrm][pos]['total'] += 1  # Add 1 to total and metc counts if methylated
-        elif met == '-':
-            bismark_dict[chrm][pos]['total'] += 1  # Add 1 to total count if unmethylated
-        if comprehensive:
-            bismark_dict[chrm][pos]['strand'] = 1  # Store strand as 1 is from the comprehensive report or OT file
-        elif top:
-            bismark_dict[chrm][pos]['strand'] = 1
-        elif bottom:
-            bismark_dict[chrm][pos]['strand'] = -1  # Store strand as -1 if from the OB file
-
-
 # Loop over and parse the input files
+
+bismark_data = {}  # Dictionary to store bismark summaries into once parsed
 
 comprehensive_summary = None
 top_summary = None
@@ -133,29 +115,29 @@ for file in input_list:
     if file == comprehensive_path:
         comprehensive_tsv = open(comprehensive_path, 'r')
         comprehensive_summary = csv.reader(comprehensive_tsv, delimiter='\t')
-        parse_bismark(comprehensive_summary)
+        parse_bismark(comprehensive_summary, bismark_data, 'comprehensive')
     if file == top_path:
         top_tsv = open(top_path, 'r')
         top_summary = csv.reader(top_tsv, delimiter='\t')
-        parse_bismark(top_summary)
+        parse_bismark(top_summary, bismark_data, 'top')
     if file == bottom_path:
         bottom_tsv = open(bottom_path, 'r')
         bottom_summary = csv.reader(bottom_tsv, delimiter='\t')
-        parse_bismark(bottom_summary)
+        parse_bismark(bottom_summary, bismark_data, 'bottom')
 
 # Iterate over the nested dictionary to get percent methylation as decimal and add as new key:value pair
 
-for chrm in bismark_dict:
-    for pos in bismark_dict[chrm]:
-        bismark_dict[chrm][pos]['dec_met'] = float(bismark_dict[chrm][pos]['metc']) / float(
-            bismark_dict[chrm][pos]['total'])  # Calculate methylation as a decimal
+for chrm in bismark_data:
+    for pos in bismark_data[chrm]:
+        bismark_data[chrm][pos]['dec_met'] = float(bismark_data[chrm][pos]['metc']) / float(
+            bismark_data[chrm][pos]['total'])  # Calculate methylation as a decimal
 
 # Talk to the user
 
 if min_coverage:
     print('Saving CoGe-formatted and coverage-filtered file to:\n', coge_filtered_path)
 if unfiltered == 't':
-    print('Saving CoGe-formatted unfiltered file to:\n', coge_unfilitered_path)
+    print('Saving CoGe-formatted unfiltered file to:\n', coge_unfiltered_path)
 
 # Create an output for CoGe upload
 
@@ -163,18 +145,18 @@ if min_coverage:
     coge_filtered_csv = open(coge_filtered_path, 'w')
     coge_formatted_filtered = csv.writer(coge_filtered_csv)
 if unfiltered == 't':
-    coge_unfiltered_csv = open(coge_unfilitered_path, 'w')
+    coge_unfiltered_csv = open(coge_unfiltered_path, 'w')
     coge_formatted_unfiltered = csv.writer(coge_unfiltered_csv)
 
 # Iterate over the dictionary for file-outputs
 
-for chrm in bismark_dict:
-    for pos in bismark_dict[chrm]:  # Nested loop
+for chrm in bismark_data:
+    for pos in bismark_data[chrm]:  # Nested loop
         chrm_key = fix_chromosome_id(chrm)  # Save chromosome number key, position key, and methylation fraction
         pos_key = pos
-        dec_met = bismark_dict[chrm][pos]['dec_met']
-        total = bismark_dict[chrm][pos]['total']
-        strand = bismark_dict[chrm][pos]['strand']
+        dec_met = bismark_data[chrm][pos]['dec_met']
+        total = bismark_data[chrm][pos]['total']
+        strand = bismark_data[chrm][pos]['strand']
         if min_coverage and total >= min_coverage:
             coge_formatted_filtered.writerow(
                 [chrm_key, pos_key, pos_key, strand, dec_met, total])  # Output as filtered .csv file
