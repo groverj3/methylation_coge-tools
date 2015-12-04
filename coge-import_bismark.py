@@ -3,6 +3,7 @@
 import csv
 import os.path
 from argparse import ArgumentParser
+from sys import exit
 
 from fix_chromosome_id import fix_chromosome_id
 
@@ -71,7 +72,8 @@ parser.add_argument('-u', '--unfiltered',
 
 parser.add_argument('-c', '--coverage',
                     type=int,
-                    help='Minimum coverage to report in an additional output .csv. Default = 1 (Unfiltered)')
+                    help='Minimum coverage to report in an additional output .csv. Default = 1 (Unfiltered)',
+                    metavar='Integer')
 
 min_coverage = parser.parse_args().coverage
 unfiltered = parser.parse_args().unfiltered
@@ -100,6 +102,8 @@ if top_path:
     file_validity(parser, top_path)
 if bottom_path:
     file_validity(parser, bottom_path)
+if not comprehensive_path and not top_path and not bottom_path:
+    exit('You must specify at least one input file!')  # Output error to stderr and exit if no file specified
 
 # Let the user know it's working
 
@@ -111,18 +115,7 @@ if top_path:
 if bottom_path:
     print(bottom_path)
 
-# Open the Bismark Methylation Extractor files add to a list
-
-input_list = []
-
-if comprehensive_path:
-    input_list.append(comprehensive_path)
-if top_path:
-    input_list.append(top_path)
-if bottom_path:
-    input_list.append(bottom_path)
-
-# Loop over and parse the input files
+# Open the Bismark Methylation Extractor files and parse
 
 bismark_data = {}  # Dictionary to store bismark summaries into once parsed
 
@@ -130,19 +123,18 @@ comprehensive_summary = None
 top_summary = None
 bottom_summary = None
 
-for file in input_list:
-    if file == comprehensive_path:
-        comprehensive_tsv = open(comprehensive_path, 'r')
-        comprehensive_summary = csv.reader(comprehensive_tsv, delimiter='\t')
-        parse_bismark(comprehensive_summary, bismark_data, 'comprehensive')
-    if file == top_path:
-        top_tsv = open(top_path, 'r')
-        top_summary = csv.reader(top_tsv, delimiter='\t')
-        parse_bismark(top_summary, bismark_data, 'top')
-    if file == bottom_path:
-        bottom_tsv = open(bottom_path, 'r')
-        bottom_summary = csv.reader(bottom_tsv, delimiter='\t')
-        parse_bismark(bottom_summary, bismark_data, 'bottom')
+if comprehensive_path:
+    comprehensive_tsv = open(comprehensive_path, 'r')
+    comprehensive_summary = csv.reader(comprehensive_tsv, delimiter='\t')
+    parse_bismark(comprehensive_summary, bismark_data, 'comprehensive')
+if top_path:
+    top_tsv = open(top_path, 'r')
+    top_summary = csv.reader(top_tsv, delimiter='\t')
+    parse_bismark(top_summary, bismark_data, 'top')
+if bottom_path:
+    bottom_tsv = open(bottom_path, 'r')
+    bottom_summary = csv.reader(bottom_tsv, delimiter='\t')
+    parse_bismark(bottom_summary, bismark_data, 'bottom')
 
 # Iterate over the nested dictionary to get percent methylation as decimal and add as new key:value pair
 
