@@ -31,13 +31,17 @@ def fix_chromosome_id(chromosome):
     if re.search(r'^0+$', chromosome):  # Set chr IDs composed only of arbitrary number of zeroes to "0"
         chromosome = 0
     elif chromosome != 0:  # Or attempt to strip leading arbitrary number of leading zeroes
-        chromosome = re.sub(r'^0+', '', chromosome)
+        leading_zeroes_regex = re.compile(r'^0+')
+        chromosome = leading_zeroes_regex.sub('', chromosome)
 
-    if chromosome == 'chloroplast':  # Set chloroplast ID to "C"
+    if re.search('chloroplast', chromosome, re.IGNORECASE):  # Set chloroplast ID to "C"
         chromosome = 'C'
         return chromosome
-    elif chromosome == 'mitochondria':  # Set mitochondria ID to "M"
+    elif re.search('mitochondria', chromosome, re.IGNORECASE):  # Set mitochondria ID to "M"
         chromosome = 'M'
         return chromosome
     else:
         return chromosome
+
+
+print(fix_chromosome_id('chRlcl|00012'))
