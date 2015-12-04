@@ -2,7 +2,6 @@
 
 import re
 
-
 # Module to strip nonsense from chromosome IDs
 
 
@@ -22,7 +21,7 @@ def fix_chromosome_id(chromosome):
                     ('\)', '_'),
                     ('_+', '')]  # Regex and substitutions from list of tuples, add cases as needed
 
-    for rep_tuple in replacements:   # Compile as regex objects, substitute regex as specified in the tuple list
+    for rep_tuple in replacements:  # Compile as regex objects, substitute regex as specified in the tuple list
         regex_pattern = re.compile(rep_tuple[0], re.IGNORECASE)
         rep = rep_tuple[1]
         chromosome = regex_pattern.sub(rep, chromosome)
