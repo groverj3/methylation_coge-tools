@@ -1,20 +1,17 @@
 #!/usr/bin/env python3
 
-__author__ = 'groverj3'
-
 import csv
 import os.path
 from argparse import ArgumentParser
 
-
 # Function to determine if you've passed a valid filename
+
 
 def file_validity(parser, arg):
     if not os.path.exists(arg):
         parser.error('%s is not a valid file path.' % arg)
     else:
-        return open(arg, 'r')
-
+        pass
 
 # Parse command line file path and coverage, store in variables
 
@@ -25,14 +22,16 @@ parser.add_argument('-c', '--coverage', type=int, required=True, help='Minimum c
 coge_path = parser.parse_args().input_file
 coverage = parser.parse_args().coverage
 
-file_validity(parser, coge_path)  # Check validity of input filename
+# Check validity of input filename
+
+file_validity(parser, coge_path)
 
 # Output file is input_file_path.coge.csv
 
 filtered_coge_path = '%s.filtered.coge.csv' % coge_path
 
-print('Filtering out cytosines with read coverage <', coverage, 'from:\n', coge_path, '\nSaving filtered file to:\n',
-      filtered_coge_path)
+print('Filtering out cytosines with read coverage <', coverage, 'from:\n', coge_path,
+      '\nSaving filtered file to:\n', filtered_coge_path)
 
 # Iterate through rows in csv and send that row to output file only if read coverage is above the specified value
 
