@@ -5,6 +5,7 @@ __author__ = 'groverj3'
 import csv
 import os.path
 from argparse import ArgumentParser
+from fix_chromosome_id import fix_chromosome_id
 
 
 # Function to determine if you've passed a valid filename
@@ -14,12 +15,6 @@ def file_validity(parser, arg):
         parser.error('%s is not a valid file path.' % arg)
     else:
         return open(arg, 'r')
-
-
-# Function to return number from a string, to extract chromosome number from string
-
-def get_int(string):
-    return int(''.join(substring for substring in string if substring.isdigit()))
 
 
 # Parse command line file path, store in variable
@@ -70,7 +65,7 @@ next(pileometh_summary)  # Skip header
 # Write to output files depending on coverage filtered or not
 
 for row in pileometh_summary:
-    chrm = get_int(row[0])
+    chrm = fix_chromosome_id(row[0])
     pos = row[1]
     met_reads = int(row[4])
     unmet_reads = int(row[5])

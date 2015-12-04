@@ -5,6 +5,7 @@ __author__ = 'groverj3'
 import csv
 import os.path
 from argparse import ArgumentParser
+from fix_chromosome_id import fix_chromosome_id
 
 
 # Function to determine if you've passed a valid filename
@@ -169,7 +170,7 @@ if unfiltered == 't':
 
 for chrm in bismark_dict:
     for pos in bismark_dict[chrm]:  # Nested loop
-        chrm_key = get_int(chrm)  # Save chromosome number key, position key, and methylation fraction
+        chrm_key = fix_chromosome_id(chrm)  # Save chromosome number key, position key, and methylation fraction
         pos_key = pos
         dec_met = bismark_dict[chrm][pos]['dec_met']
         total = bismark_dict[chrm][pos]['total']
