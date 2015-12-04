@@ -1,21 +1,20 @@
 #!/usr/bin/env python3
 
-__author__ = 'groverj3'
-
 import csv
 import os.path
 from argparse import ArgumentParser
+
 from fix_chromosome_id import fix_chromosome_id
 
 
 # Function to determine if you've passed a valid filename
 
+
 def file_validity(parser, arg):
     if not os.path.exists(arg):
         parser.error('%s is not a valid file path.' % arg)
     else:
-        return open(arg, 'r')
-
+        pass
 
 # Parse command line file path, store in variable
 
