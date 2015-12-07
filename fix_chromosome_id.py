@@ -42,6 +42,3 @@ def fix_chromosome_id(chromosome):
         return chromosome
     else:
         return chromosome
-
-
-print(fix_chromosome_id('chRlcl|00012'))
