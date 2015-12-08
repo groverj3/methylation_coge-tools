@@ -5,6 +5,7 @@ import re
 __author__ = 'groverj3'
 
 # Module to strip nonsense from chromosome IDs
+# Adapted as literally as possible from CoGe's existing Perl implementation
 
 
 def fix_chromosome_id(chromosome):
@@ -25,12 +26,11 @@ def fix_chromosome_id(chromosome):
 
     for rep_tuple in replacements:  # Compile as regex objects, substitute regex as specified in the tuple list
         regex_pattern = re.compile(rep_tuple[0], re.IGNORECASE)
-        rep = rep_tuple[1]
-        chromosome = regex_pattern.sub(rep, chromosome)
+        chromosome = regex_pattern.sub(rep_tuple[1], chromosome)
 
     if re.search(r'^0+$', chromosome):  # Set chr IDs composed only of arbitrary number of zeroes to "0"
         chromosome = 0
-    elif chromosome != 0:  # Or attempt to strip leading arbitrary number of leading zeroes
+    elif chromosome != 0:  # Or attempt to strip arbitrary number of leading zeroes
         leading_zeroes_regex = re.compile(r'^0+')
         chromosome = leading_zeroes_regex.sub('', chromosome)
 
