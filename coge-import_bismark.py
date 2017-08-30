@@ -9,7 +9,6 @@ import os.path
 from argparse import ArgumentParser
 from sys import exit
 
-__author__ = 'groverj3'
 
 # Define functions
 

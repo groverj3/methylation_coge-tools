@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 
+# Author: Jeffrey Grover
+# Created: 11/2016
+# Purpose: Filter methylation summary .csv files for a minimum coverage level
+
 import csv
 import os.path
 from argparse import ArgumentParser
 
-__author__ = 'groverj3'
 
 # Function to determine if you've passed a valid filename
 

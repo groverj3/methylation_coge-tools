@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 
+# Author: Jeffrey Grover
+# Created: 11/2016
+# Purpose: Module to strip nonsense from chromosome IDs. Adapted from CoGe's PERL implementation
+
 import re
-
-__author__ = 'groverj3'
-
-# Module to strip nonsense from chromosome IDs
-# Adapted as literally as possible from CoGe's existing Perl implementation
 
 
 def fix_chromosome_id(chromosome):
