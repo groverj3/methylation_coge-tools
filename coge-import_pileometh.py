@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 
+# Author: Jeffrey Grover
+# Created: 11/2016
+# Purpose: Convert PileOMeth .bedGraph methylation summaries into .csv for import into CoGe
+
 import csv
 import os.path
 from argparse import ArgumentParser
 
-from fix_chromosome_id import fix_chromosome_id
-
-__author__ = 'groverj3'
 
 # Function to determine if you've passed a valid filename
 
@@ -77,7 +78,7 @@ if unfiltered == 't':
 next(methylation_summary)  # Skip header
 
 for row in methylation_summary:
-    chrm = fix_chromosome_id(row[1])
+    chrm = row[1]
     pos = int(row[2]) - 1
     strand = row[3]
     if strand == 'F':
